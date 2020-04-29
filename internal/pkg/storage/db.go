@@ -10,6 +10,18 @@ type DB struct {
 	db *gorm.DB
 }
 
+func NewDB() (*DB, error) {
+	db, err := gorm.Open("postgres", "host=172.17.0.2 port=5432 user=postgres dbname=postgres password=mysecretpassword sslmode=disable")
+	if err != nil {
+		return nil, err
+	}
+	// TODO: close db
+
+	db.AutoMigrate(&models.Product{})
+
+	return &DB{db: db}, nil
+}
+
 func (db *DB) AddProduct(product *models.Product) error {
 	return db.db.Create(product).Error
 }
@@ -23,14 +35,11 @@ func (db *DB) Products() ([]models.Product, error) {
 	return products, nil
 }
 
-func NewDB() (*DB, error) {
-	db, err := gorm.Open("postgres", "host=172.17.0.2 port=5432 user=postgres dbname=postgres password=mysecretpassword sslmode=disable")
-	if err != nil {
+func (db *DB) GetProduct(id int) (*models.Product, error) {
+	var product models.Product
+	if err := db.db.First(&product, id).Error; err != nil {
 		return nil, err
 	}
-	// TODO: close db
 
-	db.AutoMigrate(&models.Product{})
-
-	return &DB{db: db}, nil
+	return &product, nil
 }

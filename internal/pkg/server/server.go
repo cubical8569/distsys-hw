@@ -8,6 +8,7 @@ import (
 )
 
 type Server struct {
+	storage storage.Storage
 	service *service.Service
 	router  chi.Router
 }
@@ -17,6 +18,7 @@ func NewServer(storage storage.Storage) *Server {
 
 	var server Server
 	server = Server{
+		storage: storage,
 		service: service,
 		router:  ServerRouter(&server),
 	}
@@ -27,3 +29,4 @@ func NewServer(storage storage.Storage) *Server {
 func (s *Server) Run() {
 	_ = http.ListenAndServe(":3333", s.router)
 }
+

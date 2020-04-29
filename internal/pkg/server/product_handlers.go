@@ -43,3 +43,8 @@ func (s *Server) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (s *Server) GetProduct(w http.ResponseWriter, r *http.Request) {
+	product := r.Context().Value("product").(*models.Product)
+	render.Respond(w, r, product)
+}

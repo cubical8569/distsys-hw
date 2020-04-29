@@ -16,4 +16,8 @@ func (s *Service) UpdateProduct(product *models.Product) error {
 	return s.storage.UpdateProduct(product)
 }
 
+func (s *Service) DeleteProduct(product *models.Product) error {
+	return s.storage.DeleteProduct(product.ID)
+}
+
 

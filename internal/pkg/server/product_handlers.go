@@ -78,3 +78,12 @@ func (s *Server) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (s *Server) DeleteProduct(w http.ResponseWriter, r *http.Request) {
+	product := r.Context().Value("product").(*models.Product)
+	err := s.service.DeleteProduct(product)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}

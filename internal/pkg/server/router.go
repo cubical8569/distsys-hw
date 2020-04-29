@@ -29,6 +29,7 @@ func ServerRouter(server *Server) chi.Router {
 			r.Use(server.ProductCtx)
 			r.Get("/", server.GetProduct)
 			r.Put("/", server.UpdateProduct)
+			r.Delete("/", server.DeleteProduct)
 		})
 	})
 

@@ -11,7 +11,7 @@ type DB struct {
 }
 
 func (db *DB) AddProduct(product *models.Product) error {
-	db.db.Create(product)
+	return db.db.Create(product).Error
 }
 
 func (db *DB) Products() ([]models.Product, error) {

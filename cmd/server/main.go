@@ -6,6 +6,11 @@ import (
 )
 
 func main() {
-	s := server.NewServer(&storage.Memory{})
+	db, err := storage.NewDB()
+	if err != nil {
+		panic(err)
+	}
+
+	s := server.NewServer(db)
 	s.Run()
 }

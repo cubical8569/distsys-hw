@@ -1,4 +1,4 @@
-package handlers
+package service
 
 import "github.com/Azatik1000/distsys-hw/internal/pkg/storage"
 

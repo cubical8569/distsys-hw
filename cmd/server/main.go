@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	s := server.Server(&storage.Memory{})
+	s := server.NewServer(&storage.Memory{})
 	s.Run()
 }

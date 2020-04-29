@@ -1,29 +1,29 @@
 package server
 
 import (
-	"github.com/Azatik1000/distsys-hw/internal/pkg/handlers"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/routers"
+	"github.com/Azatik1000/distsys-hw/internal/pkg/service"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/storage"
 	"github.com/go-chi/chi"
 	"net/http"
 )
 
-type server struct {
-	service *handlers.Service
+type Server struct {
+	service *service.Service
 	router  chi.Router
 }
 
-func Server(storage storage.Storage) *server {
-	service := handlers.NewService(storage)
+func NewServer(storage storage.Storage) *Server {
+	service := service.NewService(storage)
 
-	server := server{
+	var server Server
+	server = Server{
 		service: service,
-		router:  routers.ServerRouter(service),
+		router:  ServerRouter(&server),
 	}
 
 	return &server
 }
 
-func (s *server) Run() {
+func (s *Server) Run() {
 	_ = http.ListenAndServe(":3333", s.router)
 }

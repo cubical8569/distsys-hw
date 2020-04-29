@@ -1,13 +1,12 @@
-package routers
+package server
 
 import (
-	"github.com/Azatik1000/distsys-hw/internal/pkg/handlers"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 )
 
-func ServerRouter(service *handlers.Service) chi.Router {
+func ServerRouter(server *Server) chi.Router {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -19,13 +18,8 @@ func ServerRouter(service *handlers.Service) chi.Router {
 	r.Use(middleware.Heartbeat("/ping"))
 
 	r.Route("/products", func(r chi.Router) {
-		r.Method("GET",
-			"/",
-			handlers.NewBindRenderHandler(service.ListProducts))
-		r.Method("POST",
-			"/",
-			handlers.NewBindRenderHandler(service.CreateProduct))
-
+		r.Get("/", server.ListProducts)
+		r.Post("/", server.CreateProduct)
 	})
 
 	return r

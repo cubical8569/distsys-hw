@@ -12,4 +12,8 @@ func (s *Service) ListProducts() ([]models.Product, error) {
 	return s.storage.Products()
 }
 
+func (s *Service) UpdateProduct(product *models.Product) error {
+	return s.storage.UpdateProduct(product)
+}
+
 

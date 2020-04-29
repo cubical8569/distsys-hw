@@ -28,6 +28,7 @@ func ServerRouter(server *Server) chi.Router {
 		r.Route("/{productID}", func(r chi.Router) {
 			r.Use(server.ProductCtx)
 			r.Get("/", server.GetProduct)
+			r.Put("/", server.UpdateProduct)
 		})
 	})
 

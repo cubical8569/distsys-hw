@@ -48,3 +48,33 @@ func (s *Server) GetProduct(w http.ResponseWriter, r *http.Request) {
 	product := r.Context().Value("product").(*models.Product)
 	render.Respond(w, r, product)
 }
+
+type updateProductRequest struct {
+	models.Product
+}
+
+func (s *Server) UpdateProduct(w http.ResponseWriter, r *http.Request) {
+	oldProduct := r.Context().Value("product").(*models.Product)
+	err := s.service.UpdateProduct(oldProduct)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var input updateProductRequest
+	err = render.Decode(r, &input)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	newProduct := &input.Product
+	newProduct.ID = oldProduct.ID
+	err = s.service.UpdateProduct(newProduct)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}

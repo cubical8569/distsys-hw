@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -8,6 +9,11 @@ import (
 
 type DB struct {
 	db *gorm.DB
+}
+
+func (db *DB) UpdateProduct(product *models.Product) error {
+	fmt.Println(product.ID)
+	return db.db.Save(product).Error
 }
 
 func NewDB() (*DB, error) {

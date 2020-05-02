@@ -1,0 +1,9 @@
+basePath: /
+host: localhost:8080
+info:
+  contact:
+    name: Azat Kalmykov
+  license: {}
+  title: Online Store API
+paths: {}
+swagger: "2.0"

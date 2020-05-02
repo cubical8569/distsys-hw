@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/Azatik1000/distsys-hw/internal/pkg/handlers"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/service"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/storage"
 	"github.com/go-chi/chi"
@@ -9,18 +10,18 @@ import (
 
 type Server struct {
 	storage storage.Storage
-	service *service.Service
+	handler *handlers.Handler
 	router  chi.Router
 }
 
 func NewServer(storage storage.Storage) *Server {
 	service := service.NewService(storage)
+	handler := handlers.NewHandler(service)
+	router := ServerRouter(handler)
 
 	var server Server
 	server = Server{
-		storage: storage,
-		service: service,
-		router:  ServerRouter(&server),
+		router:  router,
 	}
 
 	return &server

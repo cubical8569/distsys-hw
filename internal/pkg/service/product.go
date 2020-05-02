@@ -8,6 +8,10 @@ func (s *Service) CreateProduct(product *models.Product) error {
 	return s.storage.AddProduct(product)
 }
 
+func (s *Service) GetProduct(id int) (*models.Product, error) {
+	return s.storage.GetProduct(id)
+}
+
 func (s *Service) ListProducts() ([]models.Product, error) {
 	return s.storage.Products()
 }

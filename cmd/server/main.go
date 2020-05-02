@@ -12,5 +12,6 @@ func main() {
 	}
 
 	s := server.NewServer(db)
+
 	s.Run()
 }

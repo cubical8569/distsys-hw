@@ -26,9 +26,21 @@ func (db *DB) AddProduct(product *models.Product) error {
 	return db.db.Create(product).Error
 }
 
-func (db *DB) Products() ([]models.Product, error) {
+func (db *DB) Products(params *GetParams) ([]models.Product, error) {
 	var products []models.Product
-	if err := db.db.Find(&products).Error; err != nil {
+
+	var err error
+	if params.Limit != nil && params.Offset != nil {
+		err = db.db.Offset(*params.Offset).Limit(*params.Limit).Find(&products).Error
+	} else if params.Offset != nil {
+		err = db.db.Offset(*params.Offset).Find(&products).Error
+	} else if params.Limit != nil {
+		err = db.db.Limit(*params.Limit).Find(&products).Error
+	} else {
+		err = db.db.Find(&products).Error
+	}
+
+	if err != nil {
 		return nil, err
 	}
 

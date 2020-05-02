@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -23,7 +24,22 @@ type ListProductsResponse struct {
 }
 
 func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
-	products, err := h.service.ListProducts()
+	limitArg := r.Context().Value("limit")
+	offsetArg := r.Context().Value("offset")
+
+	params := service.ListProductParams{}
+
+	if limitArg != nil {
+		limit := limitArg.(int)
+		params.Limit = &limit
+	}
+
+	if offsetArg != nil {
+		offset := offsetArg.(int)
+		params.Offset = &offset
+	}
+
+	products, err := h.service.ListProducts(&params)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -127,5 +143,39 @@ func (h *Handler) ProductCtx(next http.Handler) http.Handler {
 	})
 }
 
+func ContextWithQueryArg(ctx context.Context, url *url.URL,
+	argName string, argKey interface{},
+	parseArg func(string) (int, error)) (context.Context, error) {
+	argStr := url.Query().Get(argName)
 
+	if argStr == "" {
+		return ctx, nil
+	}
 
+	arg, err := parseArg(argStr)
+	if err != nil {
+		return nil, err
+	}
+
+	return context.WithValue(ctx, argKey, arg), nil
+}
+
+func (h *Handler) PaginationCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		ctx, err := ContextWithQueryArg(ctx, r.URL, "limit", "limit", strconv.Atoi)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		ctx, err = ContextWithQueryArg(ctx, r.URL, "offset", "offset", strconv.Atoi)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}

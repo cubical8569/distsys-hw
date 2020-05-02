@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/Azatik1000/distsys-hw/internal/pkg/models"
+	"github.com/Azatik1000/distsys-hw/internal/pkg/storage"
 )
 
 func (s *Service) CreateProduct(product *models.Product) error {
@@ -12,8 +13,10 @@ func (s *Service) GetProduct(id int) (*models.Product, error) {
 	return s.storage.GetProduct(id)
 }
 
-func (s *Service) ListProducts() ([]models.Product, error) {
-	return s.storage.Products()
+type ListProductParams storage.GetParams
+
+func (s *Service) ListProducts(params *ListProductParams) ([]models.Product, error) {
+	return s.storage.Products((*storage.GetParams)(params))
 }
 
 func (s *Service) UpdateProduct(product *models.Product) error {

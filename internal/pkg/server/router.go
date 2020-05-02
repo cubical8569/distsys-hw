@@ -1,10 +1,12 @@
 package server
 
 import (
+	_ "github.com/Azatik1000/distsys-hw/docs"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/handlers"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func ServerRouter(handler *handlers.Handler) chi.Router {
@@ -29,6 +31,10 @@ func ServerRouter(handler *handlers.Handler) chi.Router {
 			r.Delete("/", handler.DeleteProduct)
 		})
 	})
+
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"),
+	))
 
 	return r
 }

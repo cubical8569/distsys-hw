@@ -18,7 +18,7 @@ func ServerRouter(handler *handlers.Handler) chi.Router {
 
 	r.Use(middleware.Heartbeat("/ping"))
 
-	r.Route("/products", func(r chi.Router) {
+	r.Route("/v1/products", func(r chi.Router) {
 		r.With(handler.PaginationCtx).Get("/", handler.ListProducts)
 		r.Post("/", handler.CreateProduct)
 

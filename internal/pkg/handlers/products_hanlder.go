@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"context"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/models"
+	"fmt"
+	"github.com/Azatik1000/distsys-hw/internal/pkg/apimodels"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/service"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -19,10 +20,15 @@ func NewHandler(service *service.Service) *Handler {
 	return &Handler{service: service}
 }
 
-type ListProductsResponse struct {
-	Products []models.Product `json:",inline"`
-}
-
+// @Summary List all products
+// @Description List all products
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param: limit query int false "limit"
+// @Param: offset query int false "offset"
+// @Success 200 {array} apimodels.ProductResponse
+// @Router /v1/products [get]
 func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	limitArg := r.Context().Value("limit")
 	offsetArg := r.Context().Value("offset")
@@ -49,15 +55,16 @@ func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	render.Respond(w, r, products)
 }
 
-type createProductRequest struct {
-	models.Product
-}
-
-type createProductResponse struct {
-}
-
+// @Summary Create a product
+// @Description Create a product
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param product body apimodels.ProductRequest true "product"
+// @Success 200 {object} apimodels.ProductResponse
+// @Router /v1/products [post]
 func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
-	var input createProductRequest
+	var input apimodels.ProductRequest
 	err := render.Decode(r, &input)
 
 	if err != nil {
@@ -65,51 +72,71 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.CreateProduct(&input.Product)
+	fmt.Println("input:", input)
+	response, err := h.service.CreateProduct(&input)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	render.Respond(w, r, response)
 }
 
+// @Summary Get a product with provided id
+// @Description Get a product with provided id
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param id path int true "product id"
+// @Success 200 {object} apimodels.ProductResponse
+// @Router /v1/products/{id} [get]
 func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
-	product := r.Context().Value("product").(*models.Product)
-	render.Respond(w, r, product)
+	id := r.Context().Value("productID").(uint)
+	response, _ := h.service.GetProduct(id)
+	render.Respond(w, r, response)
 }
 
-type updateProductRequest struct {
-	models.Product
-}
-
+// @Summary Update a product
+// @Description Update a product
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param id path int true "product id"
+// @Param product body apimodels.ProductRequest true "product"
+// @Success 200 {object} apimodels.ProductResponse
+// @Router /v1/products/{id} [put]
 func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
-	oldProduct := r.Context().Value("product").(*models.Product)
-	err := h.service.UpdateProduct(oldProduct)
+	id := r.Context().Value("productID").(uint)
 
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	var input updateProductRequest
-	err = render.Decode(r, &input)
+	var input apimodels.ProductRequest
+	err := render.Decode(r, &input)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	newProduct := &input.Product
-	newProduct.ID = oldProduct.ID
-	err = h.service.UpdateProduct(newProduct)
+	response, err := h.service.UpdateProduct(id, &input)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	render.Respond(w, r, response)
 }
 
+// @Summary Delete a product
+// @Description Delete a product
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param id path int true "product id"
+// @Success 200
+// @Router /v1/products/{id} [delete]
 func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
-	product := r.Context().Value("product").(*models.Product)
-	err := h.service.DeleteProduct(product)
+	id := r.Context().Value("productID").(uint)
+	err := h.service.DeleteProduct(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -118,15 +145,17 @@ func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) ProductCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var product *models.Product
+		var productID uint
 		var err error
 
-		if articleIDArg := chi.URLParam(r, "productID"); articleIDArg != "" {
-			var articleID int
-			articleID, err = strconv.Atoi(articleIDArg)
+		if productIDArg := chi.URLParam(r, "productID"); productIDArg != "" {
+			var tmp uint64
+			tmp, err = strconv.ParseUint(productIDArg, 10, 64)
 
+			// TODO: make safe conversion
 			if err == nil {
-				product, err = h.service.GetProduct(articleID)
+				productID = uint(tmp)
+				_, err = h.service.GetProduct(productID)
 			}
 		} else {
 			http.Error(w, "not found", http.StatusNotFound)
@@ -138,7 +167,7 @@ func (h *Handler) ProductCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "product", product)
+		ctx := context.WithValue(r.Context(), "productID", productID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

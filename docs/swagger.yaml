@@ -1,9 +1,134 @@
 basePath: /
-host: localhost:8080
+definitions:
+  apimodels.ProductRequest:
+    properties:
+      code:
+        type: string
+      kind:
+        type: integer
+      name:
+        type: string
+    type: object
+  apimodels.ProductResponse:
+    properties:
+      code:
+        type: string
+      id:
+        type: integer
+      kind:
+        type: integer
+      name:
+        type: string
+    type: object
+host: localhost:3333
 info:
   contact:
     name: Azat Kalmykov
   license: {}
   title: Online Store API
-paths: {}
+paths:
+  /v1/products:
+    get:
+      consumes:
+      - application/json
+      description: List all products
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/apimodels.ProductResponse'
+            type: array
+      summary: List all products
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Create a product
+      parameters:
+      - description: product
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/apimodels.ProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apimodels.ProductResponse'
+      summary: Create a product
+      tags:
+      - products
+  /v1/products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a product
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      summary: Delete a product
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: Get a product with provided id
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apimodels.ProductResponse'
+      summary: Get a product with provided id
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Update a product
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: product
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/apimodels.ProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apimodels.ProductResponse'
+      summary: Update a product
+      tags:
+      - products
 swagger: "2.0"
+tags:
+- name: products

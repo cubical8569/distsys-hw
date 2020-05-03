@@ -6,11 +6,16 @@ import (
 	"github.com/Azatik1000/distsys-hw/internal/pkg/storage"
 )
 
-// @title Online Store API
 
-// @contact.name Azat Kalmykov
+// TODO: make host annotation adopt port
+// @Title Online Store API
 
-// @host localhost:8080
+// @Contact.name Azat Kalmykov
+
+// @Host localhost:3333
+
+// @Tag.name products
+
 // @BasePath /
 func main() {
 	db, err := storage.NewDB()

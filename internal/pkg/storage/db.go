@@ -1,9 +1,11 @@
 package storage
 
 import (
+	"fmt"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"log"
 )
 
 type DB struct {
@@ -22,8 +24,13 @@ func NewDB() (*DB, error) {
 	return &DB{db: db}, nil
 }
 
-func (db *DB) AddProduct(product *models.Product) error {
-	return db.db.Create(product).Error
+func (db *DB) AddProduct(product *models.Product) (*models.Product, error) {
+	err := db.db.Create(product).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return product, nil
 }
 
 func (db *DB) Products(params *GetParams) ([]models.Product, error) {
@@ -47,17 +54,25 @@ func (db *DB) Products(params *GetParams) ([]models.Product, error) {
 	return products, nil
 }
 
-func (db *DB) GetProduct(id int) (*models.Product, error) {
+func (db *DB) GetProduct(id uint) (*models.Product, error) {
 	var product models.Product
+	fmt.Println(id)
 	if err := db.db.First(&product, id).Error; err != nil {
 		return nil, err
 	}
 
+	log.Println("getproduct", product)
+
 	return &product, nil
 }
 
-func (db *DB) UpdateProduct(product *models.Product) error {
-	return db.db.Save(product).Error
+func (db *DB) UpdateProduct(product *models.Product) (*models.Product, error) {
+	err := db.db.Save(product).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return product, nil
 }
 
 func (db *DB) DeleteProduct(id uint) error {

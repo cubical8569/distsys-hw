@@ -4,7 +4,11 @@ import "github.com/jinzhu/gorm"
 
 type Product struct {
 	gorm.Model
-	Name string      `json:"name"`
-	Code string      `json:"code"`
-	Type productType `json:"type"`
+	Name string
+	Code string
+	Kind ProductKind
+}
+
+func NewProduct(name string, code string, kind ProductKind) *Product {
+	return &Product{Name: name, Code: code, Kind: kind}
 }

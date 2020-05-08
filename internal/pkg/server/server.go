@@ -1,18 +1,14 @@
 package server
 
 import (
+	"context"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/handlers"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/service"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/storage"
-	"github.com/go-chi/chi"
 	"net/http"
 )
 
-type Server struct {
-	storage storage.Storage
-	handler *handlers.Handler
-	router  chi.Router
-}
+type Server http.Server
 
 func NewServer(storage storage.Storage) *Server {
 	service := service.NewService(storage)
@@ -21,13 +17,17 @@ func NewServer(storage storage.Storage) *Server {
 
 	var server Server
 	server = Server{
-		router:  router,
+		Addr:    ":3333",
+		Handler: router,
 	}
 
 	return &server
 }
 
 func (s *Server) Run() {
-	_ = http.ListenAndServe(":3333", s.router)
+	_ = ((*http.Server)(s)).ListenAndServe()
 }
 
+func (s *Server) Shutdown() error {
+	return (*http.Server)(s).Shutdown(context.Background())
+}

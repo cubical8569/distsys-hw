@@ -1,23 +1,20 @@
 package storage
 
 import (
-	"fmt"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"log"
 )
 
 type DB struct {
 	db *gorm.DB
 }
 
-func NewDB() (*DB, error) {
+func NewDB() (Storage, error) {
 	db, err := gorm.Open("postgres", "host=172.17.0.2 port=5432 user=postgres dbname=postgres password=mysecretpassword sslmode=disable")
 	if err != nil {
 		return nil, err
 	}
-	// TODO: close db
 
 	db.AutoMigrate(&models.Product{})
 
@@ -56,13 +53,10 @@ func (db *DB) Products(params *GetParams) ([]models.Product, error) {
 
 func (db *DB) GetProduct(id uint) (*models.Product, error) {
 	var product models.Product
-	fmt.Println(id)
 	if err := db.db.First(&product, id).Error; err != nil {
 		return nil, err
 	}
-
-	log.Println("getproduct", product)
-
+	
 	return &product, nil
 }
 
@@ -79,4 +73,8 @@ func (db *DB) DeleteProduct(id uint) error {
 	return db.db.Delete(&models.Product{
 		Model: gorm.Model{ID: id},
 	}).Error
+}
+
+func (db *DB) Close() error {
+	return db.db.Close()
 }

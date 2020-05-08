@@ -13,4 +13,5 @@ type Storage interface {
 	UpdateProduct(product *models.Product) (*models.Product, error)
 	DeleteProduct(id uint) error
 	Products(params *GetParams) ([]models.Product, error)
+	Close() error
 }

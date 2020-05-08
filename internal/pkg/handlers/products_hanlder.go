@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/apimodels"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/service"
 	"github.com/go-chi/chi"
@@ -30,8 +29,8 @@ func NewHandler(service *service.Service) *Handler {
 // @Success 200 {array} apimodels.ProductResponse
 // @Router /v1/products [get]
 func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
-	limitArg := r.Context().Value("limit")
-	offsetArg := r.Context().Value("offset")
+	limitArg := r.Context().Value(limitArgKey{})
+	offsetArg := r.Context().Value(offsetArgKey{})
 
 	params := service.ListProductParams{}
 
@@ -72,7 +71,6 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("input:", input)
 	response, err := h.service.CreateProduct(&input)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -91,7 +89,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} apimodels.ProductResponse
 // @Router /v1/products/{id} [get]
 func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
-	id := r.Context().Value("productID").(uint)
+	id := r.Context().Value(productIDKey{}).(uint)
 	response, _ := h.service.GetProduct(id)
 	render.Respond(w, r, response)
 }
@@ -106,7 +104,7 @@ func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} apimodels.ProductResponse
 // @Router /v1/products/{id} [put]
 func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
-	id := r.Context().Value("productID").(uint)
+	id := r.Context().Value(productIDKey{}).(uint)
 
 	var input apimodels.ProductRequest
 	err := render.Decode(r, &input)
@@ -135,13 +133,15 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 // @Success 200
 // @Router /v1/products/{id} [delete]
 func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
-	id := r.Context().Value("productID").(uint)
+	id := r.Context().Value(productIDKey{}).(uint)
 	err := h.service.DeleteProduct(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
+
+type productIDKey struct {}
 
 func (h *Handler) ProductCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -167,7 +167,7 @@ func (h *Handler) ProductCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "productID", productID)
+		ctx := context.WithValue(r.Context(), productIDKey{}, productID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
@@ -189,17 +189,20 @@ func ContextWithQueryArg(ctx context.Context, url *url.URL,
 	return context.WithValue(ctx, argKey, arg), nil
 }
 
+type limitArgKey struct {}
+type offsetArgKey struct{}
+
 func (h *Handler) PaginationCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		ctx, err := ContextWithQueryArg(ctx, r.URL, "limit", "limit", strconv.Atoi)
+		ctx, err := ContextWithQueryArg(ctx, r.URL, "limit", limitArgKey{}, strconv.Atoi)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		ctx, err = ContextWithQueryArg(ctx, r.URL, "offset", "offset", strconv.Atoi)
+		ctx, err = ContextWithQueryArg(ctx, r.URL, "offset", offsetArgKey{}, strconv.Atoi)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

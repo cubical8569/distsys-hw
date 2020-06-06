@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: "mysecretpassword"
+    ports:
+      - "5432:5432"
+  app:
+    build:
+      context: "../"
+      dockerfile: "build/Dockerfile"
+    environment:
+      DB_IP: db
+      DB_PORT: 5432
+      DB_USER: "postgres"
+      DB_PASSWORD: "mysecretpassword"
+      DB_NAME: "postgres"
+    links:
+      - db
+    depends_on:
+      - db
+    ports:
+      - "3333:3333"
+
+
+    

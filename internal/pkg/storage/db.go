@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -10,8 +11,28 @@ type DB struct {
 	db *gorm.DB
 }
 
-func NewDB() (Storage, error) {
-	db, err := gorm.Open("postgres", "host=172.17.0.2 port=5432 user=postgres dbname=postgres password=mysecretpassword sslmode=disable")
+func NewDB(IP string, port string, user string, password string, name string) (Storage, error) {
+	maxTries := 5
+
+	var db *gorm.DB
+	var err error
+
+	for i := 0; i != maxTries; i++ {
+		db, err = gorm.Open(
+			"postgres",
+			fmt.Sprintf(
+				"host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
+				IP, port, user, name, password,
+			),
+		)
+
+		if err == nil {
+			break
+		}
+
+		// TODO: fix if non-connection-refused error
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +77,7 @@ func (db *DB) GetProduct(id uint) (*models.Product, error) {
 	if err := db.db.First(&product, id).Error; err != nil {
 		return nil, err
 	}
-	
+
 	return &product, nil
 }
 

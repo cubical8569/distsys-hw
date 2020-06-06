@@ -2,13 +2,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/server"
 	"github.com/Azatik1000/distsys-hw/internal/pkg/storage"
 	"os"
 	"os/signal"
 	"sync"
 )
-
 
 // TODO: make host annotation adopt port
 // @Title Online Store API
@@ -20,11 +20,49 @@ import (
 // @Tag.name products
 
 // @BasePath /
+
+func setupDB() (storage.Storage, error) {
+	dbIP, present := os.LookupEnv("DB_IP")
+	if !present {
+		return nil, fmt.Errorf("database ip not specified")
+	}
+
+	dbPort, present := os.LookupEnv("DB_PORT")
+	if !present {
+		return nil, fmt.Errorf("database port not specified")
+	}
+
+	dbUser, present := os.LookupEnv("DB_USER")
+	if !present {
+		return nil, fmt.Errorf("database user not specified")
+	}
+
+	dbPassword, present := os.LookupEnv("DB_PASSWORD")
+	if !present {
+		return nil, fmt.Errorf("database password not specified")
+	}
+
+	dbName, present := os.LookupEnv("DB_NAME")
+	if !present {
+		return nil, fmt.Errorf("database name not specified")
+	}
+
+	//time.Sleep(time.Second * 200)
+
+	db, err := storage.NewDB(dbIP, dbPort, dbUser, dbPassword, dbName)
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
+
 func main() {
-	db, err := storage.NewDB()
+	db, err := setupDB()
 	if err != nil {
 		panic(err)
 	}
+
 	defer func() {
 		_ = db.Close()
 	}()

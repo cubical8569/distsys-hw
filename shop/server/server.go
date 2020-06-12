@@ -2,9 +2,9 @@ package server
 
 import (
 	"context"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/handlers"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/service"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/storage"
+	"github.com/Azatik1000/distsys-hw/shop/handlers"
+	"github.com/Azatik1000/distsys-hw/shop/service"
+	"github.com/Azatik1000/distsys-hw/shop/storage"
 	"net/http"
 )
 

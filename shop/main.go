@@ -3,8 +3,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/server"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/storage"
+	"github.com/Azatik1000/distsys-hw/shop/server"
+	"github.com/Azatik1000/distsys-hw/shop/storage"
 	"os"
 	"os/signal"
 	"sync"

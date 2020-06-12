@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/Azatik1000/distsys-hw/internal/pkg/apimodels"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/storage"
+	"github.com/Azatik1000/distsys-hw/shop/apimodels"
+	"github.com/Azatik1000/distsys-hw/shop/storage"
 )
 
 func (s *Service) CreateProduct(

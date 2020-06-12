@@ -1,6 +1,6 @@
 package service
 
-import "github.com/Azatik1000/distsys-hw/internal/pkg/storage"
+import "github.com/Azatik1000/distsys-hw/shop/storage"
 
 type Service struct {
 	storage storage.Storage

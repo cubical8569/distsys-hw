@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/Azatik1000/distsys-hw/internal/pkg/apimodels"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/models"
+	"github.com/Azatik1000/distsys-hw/shop/apimodels"
+	"github.com/Azatik1000/distsys-hw/shop/models"
 )
 
 func productRequestToProduct(request *apimodels.ProductRequest) *models.Product {

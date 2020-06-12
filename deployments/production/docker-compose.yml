@@ -6,10 +6,12 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD} 
     command: -p ${DB_PORT} 
-  app:
+  shop:
     build:
       context: "../../"
       dockerfile: "build/production/Dockerfile"
+      args:
+        MOD_NAME: "shop"
     environment:
       DB_IP: db
       DB_PORT: ${DB_PORT} 

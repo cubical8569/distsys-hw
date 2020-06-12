@@ -2,7 +2,7 @@ package server
 
 import (
 	_ "github.com/Azatik1000/distsys-hw/docs"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/handlers"
+	"github.com/Azatik1000/distsys-hw/shop/handlers"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"

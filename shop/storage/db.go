@@ -2,7 +2,7 @@ package storage
 
 import (
 	"fmt"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/models"
+	"github.com/Azatik1000/distsys-hw/shop/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )

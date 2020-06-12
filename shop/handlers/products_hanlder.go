@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"context"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/apimodels"
-	"github.com/Azatik1000/distsys-hw/internal/pkg/service"
+	"github.com/Azatik1000/distsys-hw/shop/apimodels"
+	"github.com/Azatik1000/distsys-hw/shop/service"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"net/http"

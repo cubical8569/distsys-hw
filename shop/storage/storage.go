@@ -1,6 +1,6 @@
 package storage
 
-import "github.com/Azatik1000/distsys-hw/internal/pkg/models"
+import "github.com/Azatik1000/distsys-hw/shop/models"
 
 type GetParams struct {
 	Limit  *int

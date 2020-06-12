@@ -1,6 +1,6 @@
 package apimodels
 
-import "github.com/Azatik1000/distsys-hw/internal/pkg/models"
+import "github.com/Azatik1000/distsys-hw/shop/models"
 
 type ProductRequest struct {
 	Name string             `json:"name"`
